@@ -24,8 +24,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+
       - name: Build Wine RPM
         run: |
+          # enable ccache
+          export PATH="/usr/lib/ccache:$PATH"
           chmod +x ./build-wine.sh
           ./build-wine.sh \
             --folder  "${{ inputs.wine_folder }}" \
