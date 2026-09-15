@@ -91,7 +91,7 @@ ${SUDO} dnf install -y \
     unixODBC-devel pcsc-lite-devel sane-backends-devel \
     libusb1-devel dbus-devel libcap-devel \
     cups-devel krb5-devel libtirpc-devel \
-    libpcap-devel
+    libpcap-devel mingw64-gcc mingw32-gcc
 
 if [[ "$MODE" == "rpm" ]]; then
     ${SUDO} dnf install -y rpm-build rpmdevtools
@@ -112,7 +112,7 @@ if [[ "$MODE" == "install" ]]; then
     cd "wine-${WINE_VERSION}"
     ./configure \
         --prefix="${PREFIX}" \
-        --enable-win64 \
+        --enable-archs=i386,x86_64 \
         --with-x \
         --with-wayland \
         --with-vulkan
@@ -136,7 +136,7 @@ else
     cat > ~/rpmbuild/SPECS/wine.spec <<SPEC
 Name:           wine
 Version:        ${WINE_VERSION}
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A compatibility layer for running Windows programs
 License:        LGPL-2.1-or-later
 URL:            https://www.winehq.org/
@@ -176,7 +176,7 @@ applications against Wine.
 %autosetup -n wine-%{version}
 
 %build
-./configure --prefix=%{_prefix} --libdir=%{_libdir} --enable-win64 --with-x --with-wayland --with-vulkan
+./configure --prefix=%{_prefix} --libdir=%{_libdir} --enable-archs=i386,x86_64 --with-x --with-wayland --with-vulkan
 make %{?_smp_mflags}
 
 %install

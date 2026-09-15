@@ -4,9 +4,9 @@ Use GitHub actions to build [wine](https://winehq.org).
 Currently only built for AlmaLinux 10 (x86_64), but you can adapt it to your own. This acts as a template.
 
 ## Steps
-Download the `wine-11.0-1.el10.x86_64.rpm` file from the [Releases Page](https://github.com/OreDakeDesu/wine-builds/releases) and then run:
+Download the `wine-11.0-2.el10.x86_64.rpm` file from the [Releases Page](https://github.com/OreDakeDesu/wine-builds/releases) and then run:
 ```sh
-sudo dnf install -y ./wine-11.0-1.el10.x86_64.rpm
+sudo dnf install -y ./wine-11.0-*.rpm
 ```
 
 ## Note
