@@ -1,0 +1,41 @@
+name: Build Wine RPM for AlmaLinux 10
+
+on:
+  workflow_dispatch:
+    inputs:
+      wine_folder:
+        description: 'Source folder on dl.winehq.org (e.g., 11.0 for stable, 11.x for devel)'
+        required: true
+        default: '11.0'
+      wine_version:
+        description: 'Wine version / filename version (e.g., 11.0, 11.17)'
+        required: true
+        default: '11.0'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    container:
+      image: almalinux:10
+      options: --user root
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Wine RPM
+        run: |
+          chmod +x ./build-wine.sh
+          ./build-wine.sh \
+            --folder  "${{ inputs.wine_folder }}" \
+            --version "${{ inputs.wine_version }}" \
+            --mode    rpm \
+            --output-dir "$PWD/dist"
+
+      - name: Upload RPM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wine-${{ inputs.wine_version }}-el10
+          path: dist/*.rpm
+          if-no-files-found: error
