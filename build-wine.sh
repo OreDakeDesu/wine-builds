@@ -164,8 +164,11 @@ Wine is an Open Source implementation of the Windows API on top of X,
 OpenGL, and Unix. It allows you to run Windows applications on Linux
 without a Windows license or a virtual machine.
 
-# Disable RPM hardening flags that break the wine-preloader build
+# Both of these are required to build loader/wine-preloader under RPM:
+#  - hardening specs break the -nostartfiles/-nodefaultlibs link
+#  - LTO drops the thread_data / wld_start symbols referenced from inline asm
 %undefine _hardened_build
+%global _lto_cflags %{nil}
 
 %prep
 %autosetup -n wine-%{version}
