@@ -120,6 +120,12 @@ if [[ "$MODE" == "install" ]]; then
 
     echo "=== [5/5] Installing to ${PREFIX} ==="
     ${SUDO} make install
+    # PE (mingw-built) files keep their DWARF debug info unless stripped with the mingw strip
+    # (~4x the size otherwise). Not needed to run anything.
+    ${SUDO} find "${PREFIX}/lib64/wine/x86_64-windows" -type f \( -name '*.dll' -o -name '*.exe' -o -name '*.cpl' -o -name '*.drv' -o -name '*.ocx' -o -name '*.acm' -o -name '*.sys' \) \
+        -exec x86_64-w64-mingw32-strip --strip-debug {} +
+    ${SUDO} find "${PREFIX}/lib64/wine/i386-windows" -type f \( -name '*.dll' -o -name '*.exe' -o -name '*.cpl' -o -name '*.drv' -o -name '*.ocx' -o -name '*.acm' -o -name '*.sys' \) \
+        -exec i686-w64-mingw32-strip --strip-debug {} +
 
     echo ""
     echo "=== Wine ${WINE_VERSION} installed to ${PREFIX} ==="
@@ -152,6 +158,12 @@ BuildRequires:  vulkan-loader-devel wayland-devel libxkbcommon-devel
 BuildRequires:  mesa-libGL-devel mesa-compat-libOSMesa-devel
 BuildRequires:  libxml2-devel libxslt-devel gnutls-devel
 BuildRequires:  SDL2-devel unixODBC-devel
+BuildRequires:  mingw64-gcc mingw32-gcc
+
+# Appended to the auto-detected (linked) dependencies: these are dlopen()ed
+# by name at runtime, so rpm's scanner cannot see them.
+Requires:       gnutls unixODBC samba-winbind-clients
+Requires:       libXcursor libXrandr libXfixes libXcomposite libXinerama
 
 %description
 Wine is an Open Source implementation of the Windows API on top of X,
@@ -182,6 +194,15 @@ make %{?_smp_mflags}
 %install
 make install DESTDIR=%{buildroot}
 
+# rpmbuild strips ELF only. The mingw-built PE files keep their DWARF debug
+# info unless stripped here (~4x the package size otherwise).
+find %{buildroot}%{_libdir}/wine/x86_64-windows -type f \\
+     \\( -name '*.dll' -o -name '*.exe' -o -name '*.cpl' -o -name '*.drv' -o -name '*.ocx' -o -name '*.acm' -o -name '*.sys' \\) \\
+     -exec x86_64-w64-mingw32-strip --strip-debug {} +
+find %{buildroot}%{_libdir}/wine/i386-windows -type f \\
+     \\( -name '*.dll' -o -name '*.exe' -o -name '*.cpl' -o -name '*.drv' -o -name '*.ocx' -o -name '*.acm' -o -name '*.sys' \\) \\
+     -exec i686-w64-mingw32-strip --strip-debug {} +
+
 %files
 %{_bindir}/*
 %{_libdir}/wine/
@@ -197,8 +218,8 @@ make install DESTDIR=%{buildroot}
 %{_libdir}/wine/*/*.a
 
 %changelog
-* $(date '+%a %b %d %Y') CI <ci@example.com> - ${WINE_VERSION}-1
-- Automated build of Wine ${WINE_VERSION}
+* $(date '+%a %b %d %Y') CI <ci@example.com> - ${WINE_VERSION}-2
+- Automated build of Wine ${WINE_VERSION} (i386+x86_64 WoW64, PE files stripped)
 SPEC
 
     rpmbuild -bb ~/rpmbuild/SPECS/wine.spec
