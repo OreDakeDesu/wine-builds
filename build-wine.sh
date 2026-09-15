@@ -164,6 +164,14 @@ Wine is an Open Source implementation of the Windows API on top of X,
 OpenGL, and Unix. It allows you to run Windows applications on Linux
 without a Windows license or a virtual machine.
 
+%package devel
+Summary:        Development files for Wine
+Requires:       %{name} = %{version}-%{release}
+
+%description devel
+Headers, import libraries, and static libraries for building Windows
+applications against Wine.
+
 # Both of these are required to build loader/wine-preloader under RPM:
 #  - hardening specs break the -nostartfiles/-nodefaultlibs link
 #  - LTO drops the thread_data / wld_start symbols referenced from inline asm
@@ -185,6 +193,14 @@ make install DESTDIR=%{buildroot}
 %{_libdir}/wine/
 %{_datadir}/wine/
 %{_datadir}/applications/wine*.desktop
+%{_mandir}/man1/*.1*
+%{_mandir}/*/man1/*.1*
+%exclude %{_includedir}/wine/
+%exclude %{_libdir}/wine/*/*.a
+
+%files devel
+%{_includedir}/wine/
+%{_libdir}/wine/*/*.a
 
 %changelog
 * $(date '+%a %b %d %Y') CI <ci@example.com> - ${WINE_VERSION}-1
