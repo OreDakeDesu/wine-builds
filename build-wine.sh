@@ -153,12 +153,6 @@ BuildRequires:  mesa-libGL-devel mesa-compat-libOSMesa-devel
 BuildRequires:  libxml2-devel libxslt-devel gnutls-devel
 BuildRequires:  SDL2-devel unixODBC-devel
 
-Requires:       freetype fontconfig zlib libpng libjpeg-turbo
-Requires:       alsa-lib pulseaudio-libs gstreamer1
-Requires:       vulkan-loader wayland libxkbcommon
-Requires:       mesa-libGL mesa-compat-libOSMesa
-Requires:       libxml2 libxslt gnutls SDL2 unixODBC
-
 %description
 Wine is an Open Source implementation of the Windows API on top of X,
 OpenGL, and Unix. It allows you to run Windows applications on Linux
